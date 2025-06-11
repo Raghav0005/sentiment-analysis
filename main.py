@@ -20,7 +20,7 @@ def main():
     Returns:
         None: Executes the complete sentiment analysis workflow and saves results
     """
-    topic = "Mark Carney"        # ← change to any topic
+    topic = "Liberals"        # ← change to any topic
     max_results = 50          # ← number of items per source
 
     os.makedirs('data', exist_ok=True)
@@ -32,15 +32,15 @@ def main():
         try:
             df = fetch(topic, max_results)
             dataframes.append(df)
-            source_label = df['source'].iloc[0].replace(' ', '_').lower()
-            df.to_csv(f'data/{source_label}_raw.csv', index=False)
         except Exception as e:
             print(f"Error fetching from {fetch.__name__}: {e}")
 
+    # Combine all data sources and analyze sentiment
     all_df = pd.concat(dataframes, ignore_index=True)
     all_df = analyze_sentiment(all_df)
 
-    all_df.to_csv('data/all_sentiment.csv', index=False)
+    # Save the complete dataset with sentiment analysis
+    all_df.to_csv('data/news_with_sentiment.csv', index=False)
 
     print("\nOverall Sentiment Counts:")
     print(all_df['sentiment'].value_counts(), "\n")
