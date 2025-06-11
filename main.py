@@ -1,10 +1,11 @@
 import os
+import argparse
 import pandas as pd
 from fetchers.fetch_news import fetch_google_news
 from analyzer import analyze_sentiment, enrich_analysis
 from visualize import plot_distribution, generate_wordcloud, plot_subjectivity
 
-def main():
+def main(topic=None, max_results=None):
     """
     Main function to execute the sentiment analysis pipeline.
     
@@ -15,13 +16,17 @@ def main():
     4. Generates and saves visualizations (distribution plot and word clouds)
     
     Args:
-        None
+        topic (str): The topic to search for news articles (default: "Liberals")
+        max_results (int): Number of articles to fetch per source (default: 50)
     
     Returns:
         None: Executes the complete sentiment analysis workflow and saves results
     """
-    topic = "Liberals"        # ← change to any topic
-    max_results = 50          # ← number of items per source
+    # Use default values if not provided
+    if topic is None:
+        topic = "Liberals"
+    if max_results is None:
+        max_results = 50
 
     os.makedirs('data', exist_ok=True)
 
@@ -57,4 +62,32 @@ def main():
         generate_wordcloud(titles, f"{sentiment} Headlines Word Cloud", save_path=filename)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        description='Sentiment Analysis Tool for News Headlines',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Examples:
+  python3 main.py "artificial intelligence" 100
+  python3 main.py technology 25
+  python3 main.py "climate change" 75
+        '''
+    )
+    
+    parser.add_argument(
+        'topic', 
+        help='Topic to search for news articles (use quotes for multi-word topics)'
+    )
+    
+    parser.add_argument(
+        'max_results', 
+        type=int, 
+        help='Number of headlines to fetch and analyze'
+    )
+    
+    args = parser.parse_args()
+    
+    print(f"Searching for: '{args.topic}'")
+    print(f"Number of headlines: {args.max_results}")
+    print("-" * 50)
+    
+    main(args.topic, args.max_results)
