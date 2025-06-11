@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 from fetchers.fetch_news import fetch_google_news
-from analyzer import analyze_sentiment
-from visualize import plot_distribution, generate_wordcloud
+from analyzer import analyze_sentiment, enrich_analysis
+from visualize import plot_distribution, generate_wordcloud, plot_subjectivity
 
 def main():
     """
@@ -38,6 +38,7 @@ def main():
     # Combine all data sources and analyze sentiment
     all_df = pd.concat(dataframes, ignore_index=True)
     all_df = analyze_sentiment(all_df)
+    all_df = enrich_analysis(all_df)
 
     # Save the complete dataset with sentiment analysis
     all_df.to_csv('data/news_with_sentiment.csv', index=False)
@@ -47,7 +48,9 @@ def main():
     print("Sentiment by Source:")
     print(all_df.groupby('source')['sentiment'].value_counts(), "\n")
 
-    plot_distribution(all_df, save_path='data/sentiment_distribution.png')
+    plot_distribution(all_df, 'data/sentiment_distribution.png')
+    plot_subjectivity(all_df, 'data/subjectivity_distribution.png')
+
     for sentiment in ['Positive', 'Neutral', 'Negative']:
         titles = ' '.join(all_df[all_df.sentiment == sentiment].title)
         filename = f'data/{sentiment.lower()}_wordcloud.png'

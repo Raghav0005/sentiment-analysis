@@ -22,6 +22,29 @@ def plot_distribution(df, save_path=None):
     plt.close()
 
 
+def plot_subjectivity(df, save_path=None):
+    """
+    Create a histogram showing the distribution of subjectivity scores.
+    
+    This function generates a histogram visualization of subjectivity scores
+    from TextBlob analysis, showing how objective vs subjective the headlines are.
+    
+    Args:
+        df (pd.DataFrame): DataFrame containing sentiment analysis results with 'subjectivity' column
+        save_path (str, optional): File path to save the plot. If None, plot is not saved. Defaults to None.
+    
+    Returns:
+        None: Displays and optionally saves the subjectivity distribution histogram
+    """
+    ax = df['subjectivity'].hist(bins=20)
+    plt.title('Subjectivity Distribution')
+    plt.xlabel('Subjectivity')
+    plt.ylabel('Count')
+    plt.tight_layout()
+    if save_path: plt.savefig(save_path)
+    plt.close()
+
+
 def generate_wordcloud(text: str, title: str, save_path=None):
     """
     Generate and display a word cloud from the given text.
